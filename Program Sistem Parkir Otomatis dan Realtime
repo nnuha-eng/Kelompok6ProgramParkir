@@ -43,7 +43,8 @@ int main() {
         }
         
         cout << "\n Klik Enter untuk lanjut...";
-        cin.get(); 
+        cin.get();
+        cin.clear(); 
         
     } while (pilihan != '0');
     return 0;
@@ -102,67 +103,61 @@ void prosesKeluar() {
         return;
     }
 
-    string cariPlat;
+    string cariPlat, inputKode;
     cout << "\n ---||INPUT KENDARAAN KELUAR||--- \n";
     cout << "Masukkan Nomor Plat Kendaraaan : ";
     getline(cin, cariPlat);
+
+    cout << "Masukkan Kode Unik Tiket     : ";
+    getline(cin, inputKode);
     
-    bool ketemu = false;
+    bool platDitemukan = false;
     
     for(int i = 0; i < jumlahKendaraan; i++) {
-        
-
         if(dataPlat[i] == cariPlat) {
-            ketemu = true;
+            platDitemukan = true;
             
-            cout << "Kode Unik Parkir Kendaraan : " << KodeUnik[i] << endl;
+            if (KodeUnik[i] == inputKode) {
+                cout << "\nVerifikasi Kode Berhasil!\n";
 
-            time_t waktuKeluar = time(0);
-            double selisihDetik = difftime(waktuKeluar, dataJamMasuk[i]);
-           
-            long durasiJam = selisihDetik / 3600;
-            long sisaDetik = (long)selisihDetik % 3600;
-  
-            if (sisaDetik > 0) {
-                durasiJam++;
-            }
+                time_t waktuKeluar = time(0);
+                double selisihDetik = difftime(waktuKeluar, dataJamMasuk[i]);
+                long durasiJam = selisihDetik / 3600;
+                long sisaDetik = (long)selisihDetik % 3600;
+      
+                if (sisaDetik > 0) durasiJam++;
+                if (durasiJam < 1) durasiJam = 1;
+       
+                int totalBayar = hitungBiaya(dataJenis[i], durasiJam);   
 
-            if (durasiJam < 1) {
-                durasiJam = 1;
+                cout << "\n------------||------------\n";
+                cout << "       STRUK PARKIR       \n";
+                cout << "------------||------------\n";
+                cout << "Plat Nomor     : " << dataPlat[i] << endl;
+                cout << "Tipe           : " << (dataJenis[i] == 1 ? "Motor" : "Mobil") << endl;
+                cout << "Kode Unik      : " << KodeUnik[i] << endl;
+                cout << "Total Biaya    : Rp " << totalBayar << endl;
+                cout << "--------------------------\n";
+                
+                for (int j = i; j < jumlahKendaraan - 1; j++) {
+                    dataPlat[j] = dataPlat[j+1];
+                    dataJenis[j] = dataJenis[j+1];
+                    dataJamMasuk[j] = dataJamMasuk[j+1];
+                    KodeUnik[j] = KodeUnik[j+1];
+                }
+                jumlahKendaraan--; 
+                cout << "[Info] Kendaraan Sudah Keluar.\n";
+                
+            } else {
+                cout << "\n[WARNING] Kode Tidak Cocok!\n";
+                cout << "Kendaraan tidak dapat dikeluarkan. Harap periksa tiket surat-surat anda!\n";
             }
-   
-            int totalBayar = hitungBiaya(dataJenis[i], durasiJam);   
-
-            cout << "\n------------||------------\n";
-            cout << "       STRUK PARKIR       \n";
-            cout << "------------||------------\n";
-            cout << "Plat Nomor     : " << dataPlat[i] << endl;
-            cout << "Tipe           : " << (dataJenis[i] == 1 ? "Motor" : "Mobil") << endl;
-            cout << "Kode Unik      : " << KodeUnik[i] << endl;
-            cout << "Masuk          : " << ctime(&dataJamMasuk[i]);
-            cout << "Keluar         : " << ctime(&waktuKeluar);
-            cout << "Durasi Real    : " << selisihDetik << " Detik" << endl;
-            cout << "Durasi Tagih   : " << durasiJam << " Jam" << endl;
-            cout << "--------------------------\n";
-            cout << "TOTAL BIAYA : Rp " << totalBayar << endl;
-            cout << "--------------------------\n";
-            
-    
-            for (int j = i; j < jumlahKendaraan - 1; j++) {
-                dataPlat[j] = dataPlat[j+1];
-                dataJenis[j] = dataJenis[j+1];
-                dataJamMasuk[j] = dataJamMasuk[j+1];
-                KodeUnik[j] = KodeUnik[j+1];
-            }
-            jumlahKendaraan--; 
-            cout << "[Info] Kendaraan Sudah Keluar dari Kantong Parkir.\n";
-            
             break; 
         }
     }
-    
-    if(!ketemu) {
-        cout << "\n[!] Data Plat Nomor tidak sesuai!\n";
+
+    if(!platDitemukan) {
+        cout << "\n[!] Data Plat Nomor tidak sesuai! Ulangi\n";
     }
 }
 
