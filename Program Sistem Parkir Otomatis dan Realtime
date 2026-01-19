@@ -5,8 +5,7 @@
 
 using namespace std;
 
-
-const int MAKS = 2; 
+const int MAKS = 1; 
 string dataPlat[MAKS];  
 string KodeUnik[MAKS];        
 int dataJenis[MAKS];            
@@ -26,7 +25,7 @@ int main() {
     do {
         tampilkanMenu();
         cin >> pilihan;
-        cin.ignore(); 
+        cin.ignore(10, '\n'); 
         
         switch(pilihan) {
             case '1':
@@ -154,7 +153,7 @@ void prosesKeluar() {
                 
             } else {
                 cout << "\n[WARNING] Kode Tidak Cocok!\n";
-                cout << "Kendaraan tidak dapat dikeluarkan. Harap periksa tiket surat-surat anda!\n";
+                cout << "Kendaraan tidak dapat dikeluarkan. Harap periksa tiket dan surat-surat anda!\n";
             }
             break; 
         }
