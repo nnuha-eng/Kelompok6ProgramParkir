@@ -107,42 +107,49 @@ void prosesKeluar() {
     cout << "Masukkan Nomor Plat Kendaraaan : ";
     getline(cin, cariPlat);
 
-    cout << "Masukkan Kode Unik Tiket     : ";
-    getline(cin, inputKode);
-    
-    bool platDitemukan = false;
-    
+    int IndexDitemukan = -1;
     for(int i = 0; i < jumlahKendaraan; i++) {
         if(dataPlat[i] == cariPlat) {
-            platDitemukan = true;
-            
-            if (KodeUnik[i] == inputKode) {
+            IndexDitemukan = i;
+            break;
+        }
+    }
+
+    if (IndexDitemukan == -1) {
+        cout << "\n[!] Data Plat Nomor tidak sesuai atau Tidak ditemukan!\n";
+    } 
+    else {
+
+        cout << "Masukkan Kode Unik Tiket     : ";
+        getline(cin, inputKode);
+
+            if (KodeUnik[IndexDitemukan] == inputKode) {
                 cout << "\nVerifikasi Kode Berhasil!\n";
 
                 time_t waktuKeluar = time(0);
-                double selisihDetik = difftime(waktuKeluar, dataJamMasuk[i]);
+                double selisihDetik = difftime(waktuKeluar, dataJamMasuk[IndexDitemukan]);
                 long durasiJam = selisihDetik / 3600;
                 long sisaDetik = (long)selisihDetik % 3600;
       
                 if (sisaDetik > 0) durasiJam++;
                 if (durasiJam < 1) durasiJam = 1;
        
-                int totalBayar = hitungBiaya(dataJenis[i], durasiJam);   
+                int totalBayar = hitungBiaya(dataJenis[IndexDitemukan], durasiJam);   
 
                 cout << "\n------------||------------\n";
                 cout << "       STRUK PARKIR       \n";
                 cout << "------------||------------\n";
-                cout << "Plat Nomor     : " << dataPlat[i] << endl;
-                cout << "Tipe           : " << (dataJenis[i] == 1 ? "Motor" : "Mobil") << endl;
-                cout << "Kode Unik      : " << KodeUnik[i] << endl;
-                cout << "Masuk          : " << ctime(&dataJamMasuk[i]);
+                cout << "Plat Nomor     : " << dataPlat[IndexDitemukan] << endl;
+                cout << "Tipe           : " << (dataJenis[IndexDitemukan] == 1 ? "Motor" : "Mobil") << endl;
+                cout << "Kode Unik      : " << KodeUnik[IndexDitemukan] << endl;
+                cout << "Masuk          : " << ctime(&dataJamMasuk[IndexDitemukan]);
                 cout << "Keluar         : " << ctime(&waktuKeluar);
                 cout << "Durasi Real    : " << selisihDetik << " Detik" << endl;
                 cout << "Durasi Tagih   : " << durasiJam << " Jam" << endl;
                 cout << "Total Biaya    : Rp " << totalBayar << endl;
                 cout << "--------------------------\n";
                 
-                for (int j = i; j < jumlahKendaraan - 1; j++) {
+                for (int j = IndexDitemukan; j < jumlahKendaraan - 1; j++) {
                     dataPlat[j] = dataPlat[j+1];
                     dataJenis[j] = dataJenis[j+1];
                     dataJamMasuk[j] = dataJamMasuk[j+1];
@@ -152,17 +159,10 @@ void prosesKeluar() {
                 cout << "[Info] Kendaraan Sudah Keluar.\n";
                 
             } else {
-                cout << "\n[WARNING] Kode Tidak Cocok!\n";
-                cout << "Kendaraan tidak dapat dikeluarkan. Harap periksa tiket dan surat-surat anda!\n";
+                cout << "\n Kode Tidak Cocok! Ulangi!\n";
             }
-            break; 
         }
     }
-
-    if(!platDitemukan) {
-        cout << "\n[!] Data Plat Nomor tidak sesuai! Ulangi\n";
-    }
-}
 
 int hitungBiaya(int jenis, int durasi) {
     int tarifPerJam = 0;
@@ -172,6 +172,5 @@ int hitungBiaya(int jenis, int durasi) {
     } else if (jenis == 2) {
         tarifPerJam = 5000;
     }
-    
     return tarifPerJam * durasi;
 }
